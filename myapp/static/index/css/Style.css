@@ -1,0 +1,11 @@
+.h1{
+    color: rgb(46, 14, 228);
+    text-align: center;
+    background-color: bisque;
+    border-radius: 15px;
+}
+
+p{
+    text-align: center;
+    color: blue;
+}
