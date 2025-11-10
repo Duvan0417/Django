@@ -16,5 +16,6 @@ def projects(request):
     return JsonResponse(projects, safe=False)
 
 def tasks(request):
+    title = 'Sample Task'
     #task = get_object_or_404(Task, title=title)
-    return render(request, 'Task/task.html')
+    return render(request, 'Task/task.html', {'title' : title})
