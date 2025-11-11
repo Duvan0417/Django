@@ -1,5 +1,5 @@
+{% extends 'layouts/navbar.html' %}
 {% load static %}
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -9,7 +9,9 @@
     <link rel="stylesheet" href="{% static 'index/css/Style.css' %}">
 </head>
 <body>
+    {% block content %}
     <h1 class="h1"> {{titulo}} </h1>
     <p>Lorem, ipsum dolor sit amet consectetur adipisicing elit. Ab deserunt nihil minima cupiditate impedit. Sit, pariatur adipisci! Vitae blanditiis architecto suscipit fugiat ex, sed ipsum, est in magnam perspiciatis molestiae!</p>
+    {% endblock %}
 </body>
 </html>

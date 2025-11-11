@@ -9,8 +9,14 @@
 </head>
 <body>
     {% block content %}
-    <h1>Hola desde about</h1>
-    <p>Lorem ipsum, dolor sit amet consectetur adipisicing elit. Corporis ad, optio laborum nobis ipsa libero voluptas! Provident nihil velit odit veniam ullam. Debitis reiciendis voluptate doloremque, animi corrupti libero ab.</p>
+    <h1>Hola desde project</h1>
+    <p>Este es un proyecto de ejemplo.</p>
+    {% for project in projects %}
+    <div>
+        <h1>{{project.name}}</h1>
+    </div>
+    {% endfor %}
+
     {% endblock %}
 </body>
 </html>
