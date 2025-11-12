@@ -1,26 +1,22 @@
 {% extends 'layouts/navbar.html' %}
+{% load static %}
 
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Document</title>
-</head>
-<body>
-    {% block content %}
+{% block content %}
+<link rel="stylesheet" href="{% static 'css/style.css' %}">
+
+<div class="task-container">
+    <a class="btn-create" href="{% url 'create_task' %}">➕ Crear tarea</a>
+
     {% for task in tasks %}
-    <button>
-        <a href="/tasks/create">Crear tarea</a>
-    </button>
-    <div>
-        <h1>{% if task.done == False %} 🕑 {% else %} ✅ {% endif %}{{task.title}}</h1>
-        <p>{{task.description}}</p>
-        <p>Project: {{task.project.name}}</p>
-        <button>Delete</button>
-        <button>Update</button>
+    <div class="task-card {% if task.done %}done{% endif %}">
+        <h2>{{ task.title }}</h2>
+        <p>{{ task.description }}</p>
+        <p><strong>Proyecto:</strong> {{ task.project.name }}</p>
+        <div class="actions">
+            <button class="btn-delete">🗑 Eliminar</button>
+            <button class="btn-update">✏ Editar</button>
+        </div>
     </div>
     {% endfor %}
-    {% endblock %}
-</body>
-</html>
+</div>
+{% endblock %}

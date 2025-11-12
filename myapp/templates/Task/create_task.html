@@ -1,9 +1,8 @@
 {% extends 'layouts/navbar.html' %}
-
+{% load static %}
 {% block content %}
 <h1>Crear una nueva tarea</h1>
-
-<form method="POST">
+<form method="POST" action="/tasks/create/">
     {% csrf_token %}
     {{ form.as_p }}
     <button type="submit">Guardar tarea</button>

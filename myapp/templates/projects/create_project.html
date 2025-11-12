@@ -1,0 +1,10 @@
+{% extends 'layouts/navbar.html' %}
+
+    {% block content %}
+    <h1>Crear nuevo projecto</h1>
+    <form method="POST" action="/projects/create/">
+        {% csrf_token %}
+        {{ form.as_p }}
+        <button type="submit">Guardar projecto</button>
+    </form>
+    {% endblock %}
