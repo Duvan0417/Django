@@ -1,0 +1,23 @@
+{% extends 'layouts/navbar.html' %}
+
+{% block content %}
+<h1>Detalles del Proyecto</h1>
+<p><strong>Nombre:</strong> {{ project.name }}</p>
+
+{% if tasks %}
+    <h3>Tareas del proyecto:</h3>
+    {% for task in tasks %}
+    <div>
+        <button>
+        <a href="{% url 'create_task' project.id %}">➕ Crear nueva tarea</a>
+        </button>
+    </div>
+        <div>
+            <h2>{{ task.title }}</h2>
+            <p>{{ task.description }}</p>
+        </div>
+    {% endfor %}
+{% else %}
+    <p>No hay tareas asociadas a este proyecto.</p>
+{% endif %}
+{% endblock %}
