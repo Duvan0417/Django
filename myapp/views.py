@@ -2,6 +2,12 @@ from django.http import HttpResponse
 from django.shortcuts import render, get_object_or_404, redirect
 from .models import Project, Task
 from .forms import CreateNewTask, CreateNewProject
+from django.contrib.auth.forms import UserCreationForm
+
+def signup(request):
+    return render(request, "Login/login.html", {
+        'form' : UserCreationForm
+    })
 
 def index(request):
     contexto = {"titulo": "Pagina de Inicio"}

@@ -10,4 +10,6 @@ urlpatterns = [
     path('tasks/create/<int:project_id>/', views.create_task, name='create_task'),
     path('projects/create/', views.create_project, name='create_project'),
     path('Hello/<str:username>', views.hello, name='hello'),
+    path('login/', views.signup, name='login'),
+    path('signup/', views.index, name='signup'),
 ]
