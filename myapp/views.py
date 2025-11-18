@@ -1,13 +1,20 @@
 from django.http import HttpResponse
 from django.shortcuts import render, get_object_or_404, redirect
 from .models import Project, Task
-from .forms import CreateNewTask, CreateNewProject
+from .forms import CreateNewTask, CreateNewProject, EditTask
 from django.contrib.auth.forms import UserCreationForm
 
 def signup(request):
-    return render(request, "Login/login.html", {
-        'form' : UserCreationForm
-    })
+    if request.method == "POST":
+        form = UserCreationForm(request.POST)
+        if form.is_valid():
+            form.save()
+            return redirect("login")
+        else:
+            print("Errores:", form.errors)
+    else:
+        form = UserCreationForm()
+    return render(request, "Login/login.html", {"form": form})
 
 def index(request):
     contexto = {"titulo": "Pagina de Inicio"}
@@ -27,6 +34,10 @@ def tasks(request):
     tasks = list(Task.objects.all())
     return render(request, 'Task/task.html', {'tasks': tasks})
 
+from django.shortcuts import render, get_object_or_404, redirect
+from .models import Project, Task
+from .forms import CreateNewTask
+
 def create_task(request, project_id=None):
     project = None
     if project_id:
@@ -34,13 +45,15 @@ def create_task(request, project_id=None):
 
     if request.method == "POST":
         form = CreateNewTask(request.POST)
+        if project:
+            form.fields.pop('project')  # Oculta el campo también en POST
         if form.is_valid():
             title = form.cleaned_data['title']
             description = form.cleaned_data['description']
 
             if project:
                 Task.objects.create(title=title, description=description, project=project)
-                return redirect('projects_detail', id=project.id)  # ✅ corregido
+                return redirect('projects_detail', id=project.id)
             else:
                 selected_project = form.cleaned_data['project']
                 Task.objects.create(title=title, description=description, project=selected_project)
@@ -48,7 +61,7 @@ def create_task(request, project_id=None):
     else:
         form = CreateNewTask()
         if project:
-            form.fields.pop('project')  # elimina el campo del formulario
+            form.fields.pop('project')  # Oculta el campo en GET
 
     return render(request, 'Task/create_task.html', {'form': form, 'project': project})
 
@@ -70,3 +83,21 @@ def project_detail(request, id):
         'project': project,
         'tasks': tasks
     })
+
+def task_delete(request, id):
+    task = get_object_or_404(Task, id=id)
+    task.delete()
+    return redirect('tasks')
+
+def task_edit(request, id):
+    task = get_object_or_404(Task, id=id)
+
+    if request.method == "POST":
+        form = EditTask(request.POST, instance=task)
+        if form.is_valid():
+            form.save()
+            return redirect('tasks')
+    else:
+            form = EditTask(instance=task)
+
+    return render(request, 'Task/edit_task.html', {'form':form, 'task':task})

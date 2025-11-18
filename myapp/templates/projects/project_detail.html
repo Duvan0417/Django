@@ -4,11 +4,12 @@
 <h1>Detalles del Proyecto</h1>
 <p><strong>Nombre:</strong> {{ project.name }}</p>
 
+<button>
+<a href="{% url 'create_task' project.id %}">➕ Crear nueva tarea</a>
+</button>
+
 {% if tasks %}
     <h3>Tareas del proyecto:</h3>
-        <button>
-        <a href="{% url 'create_task' project.id %}">➕ Crear nueva tarea</a>
-        </button>
     {% for task in tasks %}
         <div>
             <h2>{{ task.title }}</h2>

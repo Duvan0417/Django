@@ -1,5 +1,5 @@
 from django import forms
-from myapp.models import Project
+from myapp.models import Project, Task
 
 
 class CreateNewTask(forms.Form):
@@ -13,3 +13,12 @@ class CreateNewTask(forms.Form):
 
 class CreateNewProject(forms.Form):
     name = forms.CharField(label="Nombre del projecto", max_length=200)
+
+class EditTask(forms.ModelForm):
+    class Meta:
+        model = Task
+        fields = ['title', 'description', 'project']
+        labels = {
+            'title': 'Titulo',
+            'description': 'Descripcion',
+            'project': 'Proyecto'}

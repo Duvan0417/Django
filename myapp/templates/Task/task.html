@@ -13,8 +13,13 @@
         <p>{{ task.description }}</p>
         <p><strong>Proyecto:</strong> {{ task.project.name }}</p>
         <div class="actions">
-            <button class="btn-delete">🗑 Eliminar</button>
-            <button class="btn-update">✏ Editar</button>
+            <form action="{% url 'tasks_delete' task.id %}" method="post">
+                {% csrf_token %}
+                <button class="btn-delete" type="submit" onclick="return confirm('¿Estás seguro de que deseas eliminar esta tarea?')">🗑 Eliminar</button>
+            </form>
+            <button class="btn-update">
+            <a href="{% url 'tasks_edit' task.id %}">✏ Editar</a>    
+            </button>
         </div>
     </div>
     {% endfor %}
