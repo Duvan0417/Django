@@ -3,18 +3,30 @@ from django.shortcuts import render, get_object_or_404, redirect
 from .models import Project, Task
 from .forms import CreateNewTask, CreateNewProject, EditTask
 from django.contrib.auth.forms import UserCreationForm
+from django.contrib.auth.models import User
+
 
 def signup(request):
-    if request.method == "POST":
-        form = UserCreationForm(request.POST)
-        if form.is_valid():
-            form.save()
-            return redirect("login")
-        else:
-            print("Errores:", form.errors)
+    if request.method == 'GET':
+        return render(request, 'Login/login.html', {'form': UserCreationForm()})
+
     else:
-        form = UserCreationForm()
-    return render(request, "Login/login.html", {"form": form})
+        password1 = request.POST.get('password1')
+        password2 = request.POST.get('password2')
+
+        if passwaord1 != password2:
+            return HttpResponse("Las contraseñas no coinciden")
+
+        try:
+            user = User.objects.create_user(
+                username=request.POST.get('username'),
+                password=password1
+            )
+            user.save()
+            #return HttpResponse("Usuario creado exitosamente")
+            return redirect('home')
+        except:
+            return HttpResponse("El usuario ya existe")
 
 def index(request):
     contexto = {"titulo": "Pagina de Inicio"}
@@ -33,10 +45,6 @@ def projects(request):
 def tasks(request):
     tasks = list(Task.objects.all())
     return render(request, 'Task/task.html', {'tasks': tasks})
-
-from django.shortcuts import render, get_object_or_404, redirect
-from .models import Project, Task
-from .forms import CreateNewTask
 
 def create_task(request, project_id=None):
     project = None

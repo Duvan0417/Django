@@ -1,8 +1,8 @@
 <h1>Hola desde login</h1>
-<form action="{% url 'signup' %}" method="POST">
+<form method="POST">
     {% csrf_token %}
     {{ form.as_p}}
-    <button>
+    <button type="submit">
         signup
     </button>
 </form> 
