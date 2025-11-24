@@ -1,0 +1,13 @@
+{% extends 'layouts/navbar.html' %}
+
+{% block content %}
+<h2>signin</h2>
+<form method="POST">
+    {{error}}
+    {% csrf_token %}
+    {{ form.as_p }}
+    <button type="submit">
+        signin
+    </button>
+</form>
+{% endblock %}

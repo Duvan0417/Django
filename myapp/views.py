@@ -2,49 +2,66 @@ from django.http import HttpResponse
 from django.shortcuts import render, get_object_or_404, redirect
 from .models import Project, Task
 from .forms import CreateNewTask, CreateNewProject, EditTask
-from django.contrib.auth.forms import UserCreationForm
+from django.contrib.auth.forms import UserCreationForm, AuthenticationForm
 from django.contrib.auth.models import User
+from django.contrib.auth import authenticate, login, logout
 
 
 def signup(request):
-    if request.method == 'GET':
-        return render(request, 'Login/login.html', {'form': UserCreationForm()})
+    if request.method == "GET":
+        return render(request, "Login/login.html", {"form": UserCreationForm()})
 
     else:
-        password1 = request.POST.get('password1')
-        password2 = request.POST.get('password2')
+        password1 = request.POST.get("password1")
+        password2 = request.POST.get("password2")
 
-        if passwaord1 != password2:
-            return HttpResponse("Las contraseñas no coinciden")
+        if password1 != password2:
+            return render(
+                request,
+                "Login/login.html",
+                {"form": UserCreationForm(), "error": "Las contraseñas no coinciden"},
+            )
+            # return HttpResponse("Las contraseñas no coinciden")
 
         try:
             user = User.objects.create_user(
-                username=request.POST.get('username'),
-                password=password1
+                username=request.POST.get("username"), password=password1
             )
             user.save()
-            #return HttpResponse("Usuario creado exitosamente")
-            return redirect('home')
+            login(request, user)
+            # return HttpResponse("Usuario creado exitosamente")
+            return redirect("home")
         except:
-            return HttpResponse("El usuario ya existe")
+            return render(
+                request,
+                "Login/login.html",
+                {"form": UserCreationForm(), "error": "El usuario ya existe"},
+            )
+            # return HttpResponse("El usuario ya existe")
+
 
 def index(request):
     contexto = {"titulo": "Pagina de Inicio"}
     return render(request, "index/index.html", contexto)
 
+
 def hello(request, username):
     return HttpResponse("<h1>Hello %s</h1>" % username)
 
+
 def about(request):
-    return render(request, 'about/about.html')
+    return render(request, "about/about.html")
+
 
 def projects(request):
     projects = list(Project.objects.values())
-    return render(request, 'projects/projects.html', {'projects': projects})
+    return render(request, "projects/projects.html", {"projects": projects})
+
 
 def tasks(request):
     tasks = list(Task.objects.all())
-    return render(request, 'Task/task.html', {'tasks': tasks})
+    return render(request, "Task/task.html", {"tasks": tasks})
+
 
 def create_task(request, project_id=None):
     project = None
@@ -54,48 +71,55 @@ def create_task(request, project_id=None):
     if request.method == "POST":
         form = CreateNewTask(request.POST)
         if project:
-            form.fields.pop('project')  # Oculta el campo también en POST
+            form.fields.pop("project")  # Oculta el campo también en POST
         if form.is_valid():
-            title = form.cleaned_data['title']
-            description = form.cleaned_data['description']
+            title = form.cleaned_data["title"]
+            description = form.cleaned_data["description"]
 
             if project:
-                Task.objects.create(title=title, description=description, project=project)
-                return redirect('projects_detail', id=project.id)
+                Task.objects.create(
+                    title=title, description=description, project=project
+                )
+                return redirect("projects_detail", id=project.id)
             else:
-                selected_project = form.cleaned_data['project']
-                Task.objects.create(title=title, description=description, project=selected_project)
-                return redirect('tasks')
+                selected_project = form.cleaned_data["project"]
+                Task.objects.create(
+                    title=title, description=description, project=selected_project
+                )
+                return redirect("tasks")
     else:
         form = CreateNewTask()
         if project:
-            form.fields.pop('project')  # Oculta el campo en GET
+            form.fields.pop("project")  # Oculta el campo en GET
 
-    return render(request, 'Task/create_task.html', {'form': form, 'project': project})
+    return render(request, "Task/create_task.html", {"form": form, "project": project})
+
 
 def create_project(request):
     if request.method == "POST":
         form = CreateNewProject(request.POST)
         if form.is_valid():
-            name = form.cleaned_data['name']
+            name = form.cleaned_data["name"]
             Project.objects.create(name=name)
-            return redirect('projects')
+            return redirect("projects")
     else:
         form = CreateNewProject()
-    return render(request, 'projects/create_project.html', {'form': form})
+    return render(request, "projects/create_project.html", {"form": form})
+
 
 def project_detail(request, id):
     project = get_object_or_404(Project, id=id)
     tasks = Task.objects.filter(project=project)
-    return render(request, 'projects/project_detail.html', {
-        'project': project,
-        'tasks': tasks
-    })
+    return render(
+        request, "projects/project_detail.html", {"project": project, "tasks": tasks}
+    )
+
 
 def task_delete(request, id):
     task = get_object_or_404(Task, id=id)
     task.delete()
-    return redirect('tasks')
+    return redirect("tasks")
+
 
 def task_edit(request, id):
     task = get_object_or_404(Task, id=id)
@@ -104,8 +128,30 @@ def task_edit(request, id):
         form = EditTask(request.POST, instance=task)
         if form.is_valid():
             form.save()
-            return redirect('tasks')
+            return redirect("tasks")
     else:
-            form = EditTask(instance=task)
+        form = EditTask(instance=task)
 
-    return render(request, 'Task/edit_task.html', {'form':form, 'task':task})
+    return render(request, "Task/edit_task.html", {"form": form, "task": task})
+
+
+def signout(request):
+    logout(request)
+    return redirect('home')
+
+def signin(request):
+    if request.method == 'GET':
+        return render(request, "Login/signin.html", {"form": AuthenticationForm()})
+    else:
+        user = authenticate(
+            request,
+            username=request.POST['username'],
+            password=request.POST['password'])
+        if user is None:
+            return render(request, "Login/signin.html", {
+                "form": AuthenticationForm(),
+                "error": "El nombre de usuario o la contraseña son incorrectos"
+            })
+        else:
+            login(request, user)
+            return redirect('home')
